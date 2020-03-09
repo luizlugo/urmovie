@@ -1,7 +1,7 @@
 package mx.volcanolabs.urmovie.network;
 
 import io.reactivex.rxjava3.core.Observable;
-import mx.volcanolabs.urmovie.models.MoviesResponse;
+import mx.volcanolabs.urmovie.entities.MoviesResponse;
 
 public class MoviesService {
     RestApi mRestApi;

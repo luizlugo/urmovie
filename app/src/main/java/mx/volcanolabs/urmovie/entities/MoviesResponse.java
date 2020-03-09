@@ -1,4 +1,4 @@
-package mx.volcanolabs.urmovie.models;
+package mx.volcanolabs.urmovie.entities;
 
 import com.google.gson.annotations.SerializedName;
 

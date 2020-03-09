@@ -2,7 +2,7 @@ package mx.volcanolabs.urmovie.network;
 
 import io.reactivex.rxjava3.core.Observable;
 import mx.volcanolabs.urmovie.Constants;
-import mx.volcanolabs.urmovie.models.MoviesResponse;
+import mx.volcanolabs.urmovie.entities.MoviesResponse;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
