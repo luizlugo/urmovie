@@ -1,12 +1,13 @@
 package mx.volcanolabs.urmovie.network;
 
+import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static mx.volcanolabs.urmovie.Constants.BASE_URL;
 
 public class NetClientInstance {
     private static Retrofit retrofit;
-    private static final String BASE_URL = "http://image.tmdb.org/t/p/";
 
     private static Retrofit getRetrofitInstance() {
         if (retrofit == null) {
@@ -14,7 +15,7 @@ public class NetClientInstance {
                     .Builder()
                     .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                     .build();
         }
         return retrofit;

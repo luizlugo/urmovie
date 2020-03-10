@@ -1,22 +1,28 @@
 package mx.volcanolabs.urmovie.network;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import mx.volcanolabs.urmovie.entities.MoviesResponse;
 
 public class MoviesService {
-    RestApi mRestApi;
+    private RestApi mRestApi;
 
     public MoviesService() {
         mRestApi = NetClientInstance.getRestApi();
     }
 
-    private Observable<MoviesResponse> getTopRatedMovies(Integer page) {
+    public Observable<MoviesResponse> getTopRatedMovies(Integer page) {
         return mRestApi
-                .getTopRatedMovies(page);
+                .getTopRatedMovies(page)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private Observable<MoviesResponse> getPopularMovies(Integer page) {
+    public Observable<MoviesResponse> getPopularMovies(Integer page) {
         return mRestApi
-                .getPopularMovies(page);
+                .getPopularMovies(page)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }
