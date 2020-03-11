@@ -2,9 +2,13 @@ package mx.volcanolabs.urmovie.entities;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
-public class Movie {
+public class Movie implements Serializable {
     @SerializedName("poster_path")
     private String posterPath;
     @SerializedName("adult")
@@ -33,6 +37,9 @@ public class Movie {
     private Boolean video;
     @SerializedName("vote_average")
     private Double voteAverage;
+
+    private final String releaseDateSdfIn = "yyyy-MM-dd";
+    private final String releaseDateSdfOut = "MMM dd, yyyy";
 
     public String getPosterPath() {
         return posterPath;
@@ -144,5 +151,20 @@ public class Movie {
 
     public void setVoteAverage(Double voteAverage) {
         this.voteAverage = voteAverage;
+    }
+
+    public String getParsedReleaseDate() {
+        if (releaseDate != null) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat(releaseDateSdfIn);
+                SimpleDateFormat sdfOut = new SimpleDateFormat(releaseDateSdfOut);
+                Date date = sdf.parse(releaseDate);
+                return sdfOut.format(date);
+            } catch (ParseException e) {
+                return "";
+            }
+        }
+
+        return "";
     }
 }

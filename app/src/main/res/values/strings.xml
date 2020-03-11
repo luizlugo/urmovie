@@ -7,4 +7,9 @@
     <string name="no_internet_title">Failed to load, try again</string>
     <string name="no_internet_description">An error occurred while getting the data for you, tap on Retry to Load again.</string>
     <string name="retry">Retry</string>
+
+    <string name="title">Title</string>
+    <string name="release_date">Release Date</string>
+    <string name="vote_average">Vote average</string>
+    <string name="plot_synopsis">Plot synopsis</string>
 </resources>

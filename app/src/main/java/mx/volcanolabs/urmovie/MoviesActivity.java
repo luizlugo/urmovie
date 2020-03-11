@@ -1,5 +1,6 @@
 package mx.volcanolabs.urmovie;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,13 +54,13 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
         presenter = MoviesPresenter.getInstance();
         rvMovies.setLayoutManager(new GridLayoutManager(this, 2, LinearLayoutManager.VERTICAL, false));
         rvMovies.addItemDecoration(new MoviesItemDecorator(2, spacingInPixels, true));
+        loadPopularMovies();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         presenter.setView(this);
-        loadPopularMovies();
     }
 
     @Override
@@ -133,7 +134,9 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
 
     @Override
     public void onMovieClicked(Movie movie) {
-        // no-op
+        Intent movieIntent = new Intent(this, MovieDetailActivity.class);
+        movieIntent.putExtra(MovieDetailActivity.MOVIE_PARAM, movie);
+        startActivity(movieIntent);
     }
 
     @Override
