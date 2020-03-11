@@ -11,7 +11,6 @@ public class MoviesPresenter {
     private static MoviesPresenter instance;
     private MoviesView view;
     private MoviesService moviesService;
-    private int currentPage = 1;
 
     public MoviesPresenter() {
         moviesService = new MoviesService();
@@ -28,22 +27,42 @@ public class MoviesPresenter {
         this.view = view;
     }
 
-    public void init() {
-        this.getMovies();
-    }
-
-    public void getMovies() {
-        moviesService.getPopularMovies(currentPage).subscribe(new DisposableObserver<MoviesResponse>() {
+    public void loadPopularMoviesForPage(int page) {
+        moviesService.getPopularMovies(page).subscribe(new DisposableObserver<MoviesResponse>() {
             @Override
             public void onNext(@NonNull MoviesResponse moviesResponse) {
                 if (view != null) {
-                    view.onMoviesRetrieved(moviesResponse.getMovies());
+                    view.onMoviesRetrieved(moviesResponse);
                 }
             }
 
             @Override
             public void onError(@NonNull Throwable e) {
-                Timber.i("Error when requesting movies");
+                if (view != null) {
+                    view.displayErrorScreen();
+                }
+            }
+
+            @Override
+            public void onComplete() {
+            }
+        });
+    }
+
+    public void loadTopRatedMoviesForPage(int page) {
+        moviesService.getTopRatedMovies(page).subscribe(new DisposableObserver<MoviesResponse>() {
+            @Override
+            public void onNext(@NonNull MoviesResponse moviesResponse) {
+                if (view != null) {
+                    view.onMoviesRetrieved(moviesResponse);
+                }
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+                if (view != null) {
+                    view.displayErrorScreen();
+                }
             }
 
             @Override

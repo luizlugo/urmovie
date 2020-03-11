@@ -6,9 +6,5 @@
     android:layout_height="wrap_content"
     android:minHeight="200dp"
     android:id="@+id/vg_load_more">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/load_more_movies"
-        android:textSize="22sp" />
+
 </FrameLayout>

@@ -1,9 +1,8 @@
 package mx.volcanolabs.urmovie.views;
 
-import java.util.List;
-
-import mx.volcanolabs.urmovie.entities.Movie;
+import mx.volcanolabs.urmovie.entities.MoviesResponse;
 
 public interface MoviesView {
-    void onMoviesRetrieved(List<Movie> movies);
+    void onMoviesRetrieved(MoviesResponse moviesResponse);
+    void displayErrorScreen();
 }
