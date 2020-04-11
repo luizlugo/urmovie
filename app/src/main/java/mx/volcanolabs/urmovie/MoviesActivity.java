@@ -2,6 +2,7 @@ package mx.volcanolabs.urmovie;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,7 +13,6 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,11 +28,9 @@ import mx.volcanolabs.urmovie.adapters.MoviesItemDecorator;
 import mx.volcanolabs.urmovie.entities.Movie;
 import mx.volcanolabs.urmovie.entities.MoviesResponse;
 import mx.volcanolabs.urmovie.listeners.MovieClickListener;
-import mx.volcanolabs.urmovie.presenter.MoviesPresenter;
 import mx.volcanolabs.urmovie.views.MoviesView;
 
 public class MoviesActivity extends AppCompatActivity implements MoviesView, MovieClickListener {
-    MoviesPresenter presenter;
     @BindView(R.id.rv_movies)
     RecyclerView rvMovies;
     @BindView(R.id.vg_no_internet)
@@ -51,16 +49,14 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
         setContentView(R.layout.activity_movies);
         ButterKnife.bind(this);
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.card_margin);
-        presenter = MoviesPresenter.getInstance();
-        rvMovies.setLayoutManager(new GridLayoutManager(this, 2, LinearLayoutManager.VERTICAL, false));
-        rvMovies.addItemDecoration(new MoviesItemDecorator(2, spacingInPixels, true));
+        rvMovies.setLayoutManager(new GridLayoutManager(this, numberOfColumns(), LinearLayoutManager.VERTICAL, false));
+        rvMovies.addItemDecoration(new MoviesItemDecorator(numberOfColumns(), spacingInPixels, true));
         loadPopularMovies();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.setView(this);
     }
 
     @Override
@@ -93,7 +89,7 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
         currentPage = 1;
         adapter = null;
         movies.clear();
-        presenter.loadPopularMoviesForPage(currentPage);
+        // presenter.loadPopularMoviesForPage(currentPage);
         loadingIndicator.setVisibility(View.VISIBLE);
     }
 
@@ -102,7 +98,7 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
         currentPage = 1;
         adapter = null;
         movies.clear();
-        presenter.loadTopRatedMoviesForPage(currentPage);
+        // presenter.loadTopRatedMoviesForPage(currentPage);
         loadingIndicator.setVisibility(View.VISIBLE);
     }
 
@@ -144,9 +140,9 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
         currentPage++;
 
         if (currentCategory == R.id.popular) {
-            presenter.loadPopularMoviesForPage(currentPage);
+            // presenter.loadPopularMoviesForPage(currentPage);
         } else {
-            presenter.loadTopRatedMoviesForPage(currentPage);
+            // presenter.loadTopRatedMoviesForPage(currentPage);
         }
     }
 
@@ -154,11 +150,22 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
     public void onBtnRetryClicked() {
         switch (currentCategory) {
             case R.id.popular:
-                presenter.loadPopularMoviesForPage(currentPage);
+                // presenter.loadPopularMoviesForPage(currentPage);
                 break;
             case R.id.top_rated:
-                presenter.loadTopRatedMoviesForPage(currentPage);
+                // presenter.loadTopRatedMoviesForPage(currentPage);
                 break;
         }
+    }
+
+    private int numberOfColumns() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        // You can change this divider to adjust the size of the item
+        int widthDivider = 400;
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / widthDivider;
+        if (nColumns < 2) return 2; //to keep the grid aspect
+        return nColumns;
     }
 }

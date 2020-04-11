@@ -1,5 +1,10 @@
 package mx.volcanolabs.urmovie.entities;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -8,38 +13,51 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+@Entity(tableName = "Movie")
 public class Movie implements Serializable {
+    @PrimaryKey
+    @SerializedName("id")
+    private int id;
+    @ColumnInfo(name = "poster_path")
     @SerializedName("poster_path")
     private String posterPath;
     @SerializedName("adult")
     private Boolean adult;
     @SerializedName("overview")
     private String overview;
+    @ColumnInfo(name = "release_date")
     @SerializedName("release_date")
     private String releaseDate;
+    @Ignore
     @SerializedName("genre_ids")
     private List<Integer> genres;
-    @SerializedName("id")
-    private int id;
+    @ColumnInfo(name = "original_title")
     @SerializedName("original_title")
     private String originalTitle;
+    @ColumnInfo(name = "original_language")
     @SerializedName("original_language")
     private String originalLanguage;
     @SerializedName("title")
     private String title;
+    @ColumnInfo(name = "backdrop_path")
     @SerializedName("backdrop_path")
     private String backdropPath;
     @SerializedName("popularity")
     private Double popularity;
+    @ColumnInfo(name = "vote_count")
     @SerializedName("vote_count")
     private Integer voteCount;
     @SerializedName("video")
     private Boolean video;
+    @ColumnInfo(name = "vote_average")
     @SerializedName("vote_average")
     private Double voteAverage;
-
+    @Ignore
     private final String releaseDateSdfIn = "yyyy-MM-dd";
+    @Ignore
     private final String releaseDateSdfOut = "MMM dd, yyyy";
+    @ColumnInfo(name = "page_number")
+    private int pageNumber;
 
     public String getPosterPath() {
         return posterPath;
@@ -151,6 +169,14 @@ public class Movie implements Serializable {
 
     public void setVoteAverage(Double voteAverage) {
         this.voteAverage = voteAverage;
+    }
+
+    public int getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
     }
 
     public String getParsedReleaseDate() {
