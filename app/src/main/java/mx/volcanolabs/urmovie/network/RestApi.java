@@ -1,22 +1,24 @@
 package mx.volcanolabs.urmovie.network;
 
+import io.reactivex.rxjava3.core.Observable;
 import mx.volcanolabs.urmovie.Constants;
+import mx.volcanolabs.urmovie.entities.MovieReviewResponse;
+import mx.volcanolabs.urmovie.entities.MovieVideoResponse;
 import mx.volcanolabs.urmovie.entities.MoviesResponse;
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface RestApi {
     @GET("movie/popular?api_key="+ Constants.moviedbApiKey)
-    Call<MoviesResponse> getPopularMovies(@Query("page") int page);
+    Observable<MoviesResponse> getPopularMovies(@Query("page") int page);
 
     @GET("movie/top_rated?api_key="+ Constants.moviedbApiKey)
-    Call<MoviesResponse> getTopRatedMovies(@Query("page") int page);
+    Observable<MoviesResponse> getTopRatedMovies(@Query("page") int page);
 
     @GET("movie/{id}/videos?api_key="+ Constants.moviedbApiKey)
-    Call<MoviesResponse> getMovieVideos(@Path("id") String movieId);
+    Observable<MovieVideoResponse> getMovieVideos(@Path("id") int movieId);
 
     @GET("movie/{id}/reviews?api_key="+ Constants.moviedbApiKey)
-    Call<MoviesResponse> getMovieReviews(@Path("id") String movieId);
+    Observable<MovieReviewResponse> getMovieReviews(@Path("id") int movieId);
 }

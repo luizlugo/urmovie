@@ -5,13 +5,16 @@ import android.content.Context;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 
 import mx.volcanolabs.urmovie.entities.Movie;
 import mx.volcanolabs.urmovie.entities.MovieFavorite;
+import mx.volcanolabs.urmovie.entities.MoviesResponse;
 
-@Database(entities = {Movie.class, MovieFavorite.class}, version = 1, exportSchema = false)
+@Database(entities = {Movie.class, MovieFavorite.class, MoviesResponse.class}, version = 2, exportSchema = false)
+@TypeConverters(DataConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
-    private static final String DATABASE_NAME = "vlurMovie";
+    private static final String DATABASE_NAME = "urmovie";
     private static final Object LOCK = new Object();
     private static AppDatabase sInstance;
 

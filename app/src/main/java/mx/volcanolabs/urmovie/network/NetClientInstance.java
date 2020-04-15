@@ -1,5 +1,9 @@
 package mx.volcanolabs.urmovie.network;
 
+import android.content.Context;
+
+import com.readystatesoftware.chuck.ChuckInterceptor;
+
 import java.util.concurrent.TimeUnit;
 
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
@@ -12,10 +16,11 @@ import static mx.volcanolabs.urmovie.Constants.BASE_URL;
 public class NetClientInstance {
     private static Retrofit retrofit;
 
-    private static Retrofit getRetrofitInstance() {
+    private static Retrofit getRetrofitInstance(Context context) {
         if (retrofit == null) {
             OkHttpClient okHttpClient = new OkHttpClient()
                     .newBuilder()
+                    .addInterceptor(new ChuckInterceptor(context))
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .build();
 
@@ -30,7 +35,7 @@ public class NetClientInstance {
         return retrofit;
     }
 
-    public static RestApi getRestApi() {
-        return getRetrofitInstance().create(RestApi.class);
+    public static RestApi getRestApi(Context context) {
+        return getRetrofitInstance(context).create(RestApi.class);
     }
 }

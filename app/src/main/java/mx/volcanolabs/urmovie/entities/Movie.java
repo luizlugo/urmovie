@@ -22,7 +22,7 @@ public class Movie implements Serializable {
     @SerializedName("poster_path")
     private String posterPath;
     @SerializedName("adult")
-    private Boolean adult;
+    private boolean adult;
     @SerializedName("overview")
     private String overview;
     @ColumnInfo(name = "release_date")
@@ -43,15 +43,15 @@ public class Movie implements Serializable {
     @SerializedName("backdrop_path")
     private String backdropPath;
     @SerializedName("popularity")
-    private Double popularity;
+    private double popularity;
     @ColumnInfo(name = "vote_count")
     @SerializedName("vote_count")
-    private Integer voteCount;
+    private int voteCount;
     @SerializedName("video")
-    private Boolean video;
+    private boolean video;
     @ColumnInfo(name = "vote_average")
     @SerializedName("vote_average")
-    private Double voteAverage;
+    private double voteAverage;
     @Ignore
     private final String releaseDateSdfIn = "yyyy-MM-dd";
     @Ignore

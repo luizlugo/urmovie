@@ -6,10 +6,14 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "MovieFavorite")
 public class MovieFavorite {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "movie_id")
-    private String movie;
+    private int movieId;
+
+    public MovieFavorite(int movieId) {
+        this.movieId = movieId;
+    }
 
     public int getId() {
         return id;
@@ -19,11 +23,11 @@ public class MovieFavorite {
         this.id = id;
     }
 
-    public String getMovie() {
-        return movie;
+    public int getMovieId() {
+        return movieId;
     }
 
-    public void setMovie(String movie) {
-        this.movie = movie;
+    public void setMovieId(int movieId) {
+        this.movieId = movieId;
     }
 }

@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,12 +26,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mx.volcanolabs.urmovie.adapters.MoviesAdapter;
 import mx.volcanolabs.urmovie.adapters.MoviesItemDecorator;
+import mx.volcanolabs.urmovie.entities.FavoriteMovie;
 import mx.volcanolabs.urmovie.entities.Movie;
-import mx.volcanolabs.urmovie.entities.MoviesResponse;
 import mx.volcanolabs.urmovie.listeners.MovieClickListener;
-import mx.volcanolabs.urmovie.views.MoviesView;
+import mx.volcanolabs.urmovie.network.MoviesService;
+import mx.volcanolabs.urmovie.viewmodel.MovieData;
+import mx.volcanolabs.urmovie.viewmodel.MovieViewModel;
 
-public class MoviesActivity extends AppCompatActivity implements MoviesView, MovieClickListener {
+public class MoviesActivity extends AppCompatActivity implements MovieClickListener {
     @BindView(R.id.rv_movies)
     RecyclerView rvMovies;
     @BindView(R.id.vg_no_internet)
@@ -40,8 +43,10 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
 
     private MoviesAdapter adapter;
     private List<Movie> movies = new ArrayList<>();
+    private List<Movie> favoriteMovies = new ArrayList<>();
     private int currentPage = 1;
     private int currentCategory = R.id.popular;
+    MovieViewModel movieViewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,7 +56,9 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
         int spacingInPixels = getResources().getDimensionPixelSize(R.dimen.card_margin);
         rvMovies.setLayoutManager(new GridLayoutManager(this, numberOfColumns(), LinearLayoutManager.VERTICAL, false));
         rvMovies.addItemDecoration(new MoviesItemDecorator(numberOfColumns(), spacingInPixels, true));
-        loadPopularMovies();
+        movieViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(MovieViewModel.class);
+        movieViewModel.getMovieData().observe(this, this::onMoviesRetrieved);
+        movieViewModel.getFavoriteMoviesObservable().observe(this, this::onFavoriteMoviesRetrieved);
     }
 
     @Override
@@ -76,6 +83,9 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
                 case R.id.top_rated:
                     loadTopRatedMovies();
                     break;
+                case R.id.favorites:
+                    loadFavorites();
+                    break;
             }
             currentCategory = item.getItemId();
             return false;
@@ -89,7 +99,7 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
         currentPage = 1;
         adapter = null;
         movies.clear();
-        // presenter.loadPopularMoviesForPage(currentPage);
+        movieViewModel.getMoviesForPage(currentPage, MoviesService.POPULAR_TYPE);
         loadingIndicator.setVisibility(View.VISIBLE);
     }
 
@@ -98,40 +108,51 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
         currentPage = 1;
         adapter = null;
         movies.clear();
-        // presenter.loadTopRatedMoviesForPage(currentPage);
+        movieViewModel.getMoviesForPage(currentPage, MoviesService.TOP_RATED_TYPE);
         loadingIndicator.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onMoviesRetrieved(MoviesResponse moviesResponse) {
-        hideErrorScreen();
-        this.movies.addAll(moviesResponse.getMovies());
+    private void loadFavorites() {
+        setTitle(R.string.favorites_option);
+        currentPage = 1;
+        adapter = null;
+        movies.clear();
+        loadingIndicator.setVisibility(View.VISIBLE);
+        onMoviesRetrieved(new MovieData(1, favoriteMovies, 1));
+    }
+
+    public void onMoviesRetrieved(MovieData movieData) {
+        this.movies = movieData.getMovies();
 
         if (adapter == null) {
-            adapter = new MoviesAdapter(this, moviesResponse.getTotalPages());
+            adapter = new MoviesAdapter(this, movieData.getTotalPages());
             rvMovies.setAdapter(adapter);
         }
 
-        adapter.setData(this.movies, currentPage);
+        adapter.setData(this.movies, movieData.getCurrentPage());
         loadingIndicator.setVisibility(View.GONE);
+        currentPage = movieData.getCurrentPage();
     }
 
-    private void hideErrorScreen() {
-        rvMovies.setVisibility(View.VISIBLE);
-        vgNoInternet.setVisibility(View.GONE);
-    }
+    public void onFavoriteMoviesRetrieved(List<FavoriteMovie> favoriteMovies) {
+        List<Movie> movies = new ArrayList<>();
 
-    @Override
-    public void displayErrorScreen() {
-        rvMovies.setVisibility(View.GONE);
-        vgNoInternet.setVisibility(View.VISIBLE);
-        loadingIndicator.setVisibility(View.GONE);
+        if (favoriteMovies != null && favoriteMovies.size() > 0) {
+            for (FavoriteMovie favoriteMovie : favoriteMovies) {
+                movies.add(favoriteMovie.movie);
+            }
+            this.favoriteMovies = movies;
+        }
+
+        if (currentCategory == R.id.favorites) {
+            adapter.setData(movies, 1);
+        }
     }
 
     @Override
     public void onMovieClicked(Movie movie) {
         Intent movieIntent = new Intent(this, MovieDetailActivity.class);
-        movieIntent.putExtra(MovieDetailActivity.MOVIE_PARAM, movie);
+        movieIntent.putExtra(MovieDetailActivity.MOVIE_PARAM, movie.getId());
         startActivity(movieIntent);
     }
 
@@ -140,9 +161,9 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
         currentPage++;
 
         if (currentCategory == R.id.popular) {
-            // presenter.loadPopularMoviesForPage(currentPage);
+            movieViewModel.getMoviesForPage(currentPage, MoviesService.POPULAR_TYPE);
         } else {
-            // presenter.loadTopRatedMoviesForPage(currentPage);
+            movieViewModel.getMoviesForPage(currentPage, MoviesService.TOP_RATED_TYPE);
         }
     }
 
@@ -150,10 +171,10 @@ public class MoviesActivity extends AppCompatActivity implements MoviesView, Mov
     public void onBtnRetryClicked() {
         switch (currentCategory) {
             case R.id.popular:
-                // presenter.loadPopularMoviesForPage(currentPage);
+                movieViewModel.getMoviesForPage(currentPage, MoviesService.POPULAR_TYPE);
                 break;
             case R.id.top_rated:
-                // presenter.loadTopRatedMoviesForPage(currentPage);
+                movieViewModel.getMoviesForPage(currentPage, MoviesService.TOP_RATED_TYPE);
                 break;
         }
     }
